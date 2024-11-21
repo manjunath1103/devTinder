@@ -2,9 +2,26 @@ const express = require("express");
 
 const app = express()
 
-app.get("/user", (req, res) => {
-    res.send({firstName: "Manjunath", lastName: "Gowda"})
+app.use('/user', (req, res, next) => {
+    const token = "xyz"
+    const isAdminAuthorized = token === 'xyz'
+    if(!isAdminAuthorized) {
+        res.status(401).send("Unauthorized Request")
+    }else{
+        next()
+    }
 })
+
+app.get("/user",
+    (req, res, next) => {
+        console.log("Route handler 1 GET /user route")
+        next()
+    },
+    (req, res, next) => {
+        console.log("Route handler 4 GET /user route")
+        res.send("Response")
+    }
+)
 
 app.post("/user", (req, res) => {
     // Save user to database
