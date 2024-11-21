@@ -1,51 +1,37 @@
 const express = require("express");
-
+const { connectDB } = require('./config/database')
 const app = express()
 
-const { userAuth, adminAuth } = require("./middleware/auth")
+const User = require('./models/user.js')
 
-// We don't need middleware always. Like we don't need auth during login or signup
-
-// Admin
-
-app.use('/admin', adminAuth)
-
-app.get('/admin/getAllData', (req, res) => {
-    res.send("All data sent")
-})
-
-app.delete('/admin/deleteUser', (req, res) => {
-    res.send("User deleted")
-})
-
-// User
-
-app.get("/user/data",
-    userAuth,
-    (req, res, next) => {
-        console.log("Route handler 1 GET /user route")
-        next()
-    },
-    (req, res, next) => {
-        console.log("Route handler 4 GET /user route")
-        res.send("Response")
+app.post('/signup', async (req, res) => {
+    try {
+        const newUser = {
+            firstName : "Manjunath",
+            lastName : "Gowda",
+            emailId : "manjunath@gmail.com",
+            password : "pass123",
+            age : 21,
+            gender : "Male"
+        }
+        const user = new User(newUser);
+        await user.save()
+        res.send(user)
+    } catch (err) {
+        res.status(400).send("Error saving user")
     }
-)
-
-app.post("/user/login", (req, res) => {
-    // Save user to database
-    res.send("User successfully added to database.")
 })
 
-app.delete("/user", userAuth, (req, res) => {
-    // Delete user from the database
-    res.send("User deleted from the database.")
-})
+connectDB()
+    .then(() => {
+        console.log("Database connection established........")
+        app.listen(7777, () => console.log("Server listening on PORT 7777"))
+    })
+    .catch(() => {
+        console.log("Database cannot be connected!")
+    })
 
-app.use("/test", (req, res) => {
+
+app.get("/test", (req, res) => {
     res.send("Test from server")
-})
-
-app.listen(7777, () => {
-    console.log("Server Listening on PORT 3000")
 })
