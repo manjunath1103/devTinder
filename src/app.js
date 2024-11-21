@@ -2,17 +2,26 @@ const express = require("express");
 
 const app = express()
 
-app.use('/user', (req, res, next) => {
-    const token = "xyz"
-    const isAdminAuthorized = token === 'xyz'
-    if(!isAdminAuthorized) {
-        res.status(401).send("Unauthorized Request")
-    }else{
-        next()
-    }
+const { userAuth, adminAuth } = require("./middleware/auth")
+
+// We don't need middleware always. Like we don't need auth during login or signup
+
+// Admin
+
+app.use('/admin', adminAuth)
+
+app.get('/admin/getAllData', (req, res) => {
+    res.send("All data sent")
 })
 
-app.get("/user",
+app.delete('/admin/deleteUser', (req, res) => {
+    res.send("User deleted")
+})
+
+// User
+
+app.get("/user/data",
+    userAuth,
     (req, res, next) => {
         console.log("Route handler 1 GET /user route")
         next()
@@ -23,12 +32,12 @@ app.get("/user",
     }
 )
 
-app.post("/user", (req, res) => {
+app.post("/user/login", (req, res) => {
     // Save user to database
     res.send("User successfully added to database.")
 })
 
-app.delete("/user", (req, res) => {
+app.delete("/user", userAuth, (req, res) => {
     // Delete user from the database
     res.send("User deleted from the database.")
 })
