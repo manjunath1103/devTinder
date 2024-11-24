@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const validator = require("validator")
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -17,7 +18,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        trim: true
+        trim: true,
+        validate(value) {
+            if(!validator.isEmail(value)) {
+                throw new Error("Invalid EmailID");
+            }
+        }
     },
     password: {
         type: String,
@@ -43,7 +49,12 @@ const userSchema = new mongoose.Schema({
     },
     pathToUrl: {
         type: String,
-        default: "URL to profile picture"
+        default: "https://picsum.photos/536/354",
+        validate(value) {
+            if(!validator.isURL(value)) {
+                throw new Error("Invalid Photo URL");
+            }
+        }
     },
     about: {
         type: String,
