@@ -1,6 +1,8 @@
 const express = require("express");
 const { connectDB } = require('./config/database')
+const bcrypt = require('bcrypt')
 const app = express()
+const { validateSignUpData, validateLoginData } = require('./utils/validation.js')
 
 app.use(express.json())
 
@@ -8,24 +10,37 @@ const User = require('./models/user.js');
 
 app.post('/signup', async (req, res) => {
     try {
-        const ALLOWED_DATA = ['firstName', 'lastName', 'emailId', 'password', 'age', 'gender', 'pathToUrl']
-        const REQUIRED_DATA = ['firstName', 'lastName', 'emailId', 'password', 'age', 'gender']
-
         const newUser = req.body
-        const fields = Object.keys(newUser)
+        validateSignUpData(newUser)
 
-        if(!REQUIRED_DATA.every(field => fields.includes(field))) {
-            throw new Error("Missing Required Data");
-        }
+        const { password } = newUser
 
-        if(!fields.every(field => ALLOWED_DATA.includes(field))) {
-            throw new Error("Invalid data for signup");
-        }
-        
-        const user = new User(newUser);
+        const passwordHash = await bcrypt.hash(password, 10)
+
+        const user = new User({ ...newUser, password: passwordHash });
         await user.save()
         res.send(user)
 
+    } catch (err) {
+        res.status(400).send(err.message)
+    }
+})
+
+app.post('/login', async (req, res) => {
+    try {
+        const { emailId, password } = req.body
+        validateLoginData(emailId, password)
+
+        const user = await User.findOne({ emailId })
+        if(!user) throw new Error("Invalid Login Details");
+        
+        const hash = user.password
+        const isPasswordValid = await bcrypt.compare(password, hash)
+        if(isPasswordValid) {
+            res.send(user)
+        }else{
+            throw new Error("Invalid Login Details");
+        }
     } catch (err) {
         res.status(400).send(err.message)
     }
