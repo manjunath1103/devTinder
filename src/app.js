@@ -81,4 +81,3 @@ connectDB()
     .catch(() => {
         console.log("Database cannot be connected!")
     })
-
