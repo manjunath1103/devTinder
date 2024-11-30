@@ -46,10 +46,10 @@ app.post('/login', async (req, res) => {
 
         if(isPasswordValid) {
             // Create JWT Token
-            const token = await jwt.sign({_id : user._id}, "SECRET_KEY")
+            const token = await jwt.sign({_id : user._id}, "SECRET_KEY", {expiresIn : "1d"})
 
             // Add JWT Token to res.cookie
-            res.cookie("token", token)
+            res.cookie("token", token, { expires: new Date(Date.now() + 60 * 60 * 1000), httpOnly: true })
 
             res.send("Login Successful")
         }else{
@@ -64,6 +64,16 @@ app.get('/profile', userAuth, async (req, res) => {
     try {
         const user = req.user
         res.send(user)
+    } catch (err) {
+        res.status(400).send(err.message)
+    }
+})
+
+app.post('/sendConnectionRequest', userAuth, async (req, res) => {
+    try {
+        const user = req.user
+        const {firstName} = user
+        res.send(`${firstName} sent a request`) 
     } catch (err) {
         res.status(400).send(err.message)
     }
