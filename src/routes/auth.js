@@ -32,12 +32,12 @@ authRouter.post('/login', async (req, res) => {
         const user = await User.findOne({ emailId })
         if (!user) throw new Error("Invalid Login Details");
 
-        const isPasswordValid = user.validatePassword(password)
+        const isPasswordValid = await user.validatePassword(password)
 
         if (isPasswordValid) {
             // Create JWT Token
             const token = user.getJWT()
-            
+
             // Add JWT Token to res.cookie
             res.cookie("token", token, { expires: new Date(Date.now() + 60 * 60 * 1000), httpOnly: true })
 
@@ -48,6 +48,11 @@ authRouter.post('/login', async (req, res) => {
     } catch (err) {
         res.status(400).send(err.message)
     }
+})
+
+authRouter.post('/logout', async (req, res) => {
+    res.cookie("token", null, {expires: new Date(Date.now())})
+    res.send("Logout Successful")
 })
 
 module.exports = { authRouter }

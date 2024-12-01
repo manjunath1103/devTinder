@@ -37,4 +37,15 @@ const validateLoginData = (emailId, password) => {
     }    
 }
 
-module.exports = { validateSignUpData, validateLoginData }
+const validateEditProfileData = (userData) => {
+    const ALLOWED_DATA = ['firstName', 'lastName', 'age', 'gender', 'pathToUrl', 'about', 'skills']
+
+    const fields = Object.keys(userData)
+    if (!fields.every(field => ALLOWED_DATA.includes(field))) {
+        throw new Error("Invalid data to edit profile");
+    }
+
+    // validate each field data here
+}
+
+module.exports = { validateSignUpData, validateLoginData, validateEditProfileData }
