@@ -41,12 +41,11 @@ app.post('/login', async (req, res) => {
         const user = await User.findOne({ emailId })
         if(!user) throw new Error("Invalid Login Details");
 
-        const hash = user.password
-        const isPasswordValid = await bcrypt.compare(password, hash)
+        const isPasswordValid = user.validatePassword(password)
 
         if(isPasswordValid) {
             // Create JWT Token
-            const token = await jwt.sign({_id : user._id}, "SECRET_KEY", {expiresIn : "1d"})
+            const token = user.getJWT()
 
             // Add JWT Token to res.cookie
             res.cookie("token", token, { expires: new Date(Date.now() + 60 * 60 * 1000), httpOnly: true })
