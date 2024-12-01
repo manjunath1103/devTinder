@@ -1,4 +1,4 @@
-const validator = require('validator')
+const validator = require('validator');
 
 const validateSignUpData = (newUser) => {
     const { firstName, emailId, password } = newUser
@@ -48,4 +48,8 @@ const validateEditProfileData = (userData) => {
     // validate each field data here
 }
 
-module.exports = { validateSignUpData, validateLoginData, validateEditProfileData }
+module.exports = { 
+    validateSignUpData, 
+    validateLoginData, 
+    validateEditProfileData
+}
