@@ -8,11 +8,13 @@ app.use(cookieParser())
 const { connectDB } = require('./config/database')
 const {authRouter} = require('./routes/auth.js')
 const {profileRouter} = require('./routes/profile.js')
-const {requestRouter} = require('./routes/requests.js')
+const {requestRouter} = require('./routes/requests.js');
+const { userRouter } = require("./routes/user.js");
 
 app.use('/', authRouter)
 app.use('/profile', profileRouter)
 app.use('/request', requestRouter)
+app.use('/user', userRouter)
 
 app.get("/test", (req, res) => {
     res.send("Test from server")

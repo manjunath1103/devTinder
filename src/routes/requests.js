@@ -89,7 +89,7 @@ requestRouter.post('/review/:status/:requestId', userAuth, async (req, res) => {
 
         const updatedRequest = await connectionRequest.save()
 
-        res.json({message : `Connection request ${data.status}`, updatedRequest})
+        res.json({message : `Connection request ${updatedRequest.status}`, updatedRequest})
 
     } catch (err) {
         res.status(500).json({ message: err.message })
